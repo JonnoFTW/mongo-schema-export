@@ -5,7 +5,13 @@ from bson import json_util
 import argparse
 
 
-def mongo_import(client: pymongo.MongoClient, fname: str, del_db: bool = False, del_col: bool = False):
+def log(verbose, *args):
+    if verbose:
+        print(*args)
+
+
+def mongo_import(client: pymongo.MongoClient, fname: str, del_db: bool = False, del_col: bool = False, databases=None,
+                 verbose=False):
     """
 
     :param client:
@@ -17,20 +23,24 @@ def mongo_import(client: pymongo.MongoClient, fname: str, del_db: bool = False, 
     with open(fname, 'r') as input_conf:
         conf = json_util.loads(input_conf.read())
         for dbname, d in conf['databases'].items():
+            if databases is not None and databases != "*" and dbname not in databases.split(','):
+                log(verbose, "Skipping:", dbname)
+                continue
             if del_db:
-                print("Dropping database:", dbname)
+                log(verbose, "Dropping database:", dbname)
                 client.drop_database(dbname)
-            print("Creating database:", dbname)
+            log(verbose, "Creating database:", dbname)
             db = client[dbname]
             for cname, c in d.items():
                 name = cname
                 if del_col:
-                    print("\tDropping collection", cname)
+                    log(verbose, "\tDropping collection", cname)
                     db.drop_collection(name)
-                print("\tCreating colletion:", cname)
+                log(verbose, "\tCreating collection:", cname)
+                log(verbose, "\t\tOptions", c['options'])
                 collection = db.create_collection(cname, **c['options'])
                 for i in c['indexes']:
-                    print("\t\tCreating index:", i)
+                    log(verbose, "\t\tCreating index:", i)
                     keys = [tuple(x) for x in i['keys']]
                     del i['keys']
                     collection.create_index(keys, **i)
@@ -49,7 +59,9 @@ def main(argv=sys.argv):
     parser.add_argument('--delete-db', action='store_true', help='Delete existing database if it exist', )
     parser.add_argument('--delete-col', action='store_true',
                         help='Delete existing collections if they exist')
-    parser.add_argument('--databases', metavar='db', type=str, help='Select databases from the config json to insert, default is all of them', default='*')
+    parser.add_argument('--verbose', action='store_true', help='Display verbose output')
+    parser.add_argument('--databases', metavar='db', type=str,
+                        help='Select databases from the config json to insert, default is all of them', default='*')
     args = parser.parse_args(argv[1:])
     if args.uri:
         _client = pymongo.MongoClient(args.uri)
@@ -59,8 +71,7 @@ def main(argv=sys.argv):
             if hasattr(args, i):
                 client_args[i] = getattr(args, i)
         _client = pymongo.MongoClient(**client_args)
-
-    mongo_import(_client, args.file, args.delete_db, args.delete_col)
+    mongo_import(_client, args.file, args.delete_db, args.delete_col, args.databases, args.verbose)
 
 
 if __name__ == "__main__":

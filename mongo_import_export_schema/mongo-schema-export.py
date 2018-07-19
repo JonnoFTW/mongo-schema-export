@@ -8,7 +8,11 @@ from bson import json_util
 import argparse
 
 
-def mongo_export(client: pymongo.MongoClient, fname: str, databases: str):
+def log(verbose, *args):
+    if verbose:
+        print(*args)
+
+def mongo_export(client: pymongo.MongoClient, fname: str, databases: str, verbose: bool):
     """
 
     :param client:
@@ -17,11 +21,11 @@ def mongo_export(client: pymongo.MongoClient, fname: str, databases: str):
     """
     out = defaultdict(dict)
     for dbname in databases.split(','):
-        print("Exporting database:", dbname)
+        log(verbose, "Exporting database:", dbname)
         db = client[dbname]
         for cname in db.list_collection_names():
             coll = db[cname]
-            print("\tExporting collection", cname)
+            log(verbose, "\tExporting collection", cname)
             opts = coll.options()
             autoIndexId = 'autoIndexId'
             if autoIndexId in opts:
@@ -60,7 +64,7 @@ def main(argv=sys.argv):
     parser.add_argument('--file', metavar='f', type=str, help='Path to exported .json file', default='config.json')
     parser.add_argument('--databases', metavar='db', type=str,
                         help='Databases separated by a comma, eg: db_1,db_2,db_n')
-    parser.add_argument('--verbose', action='store_true', help='Show output config')
+    parser.add_argument('--verbose', action='store_true', help='Show verbose output')
     args = parser.parse_args(argv[1:])
     if args.uri:
         _client = pymongo.MongoClient(args.uri)
@@ -71,7 +75,7 @@ def main(argv=sys.argv):
                 client_args[i] = getattr(args, i)
         _client = pymongo.MongoClient(**client_args)
 
-    s = mongo_export(_client, args.file, args.databases)
+    s = mongo_export(_client, args.file, args.databases, args.verbose)
     if args.verbose:
         print(s)
 
