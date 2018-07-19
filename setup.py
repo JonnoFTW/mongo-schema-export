@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 
 setup(
     name='MongoSchemaImportExport',
@@ -14,9 +14,9 @@ setup(
     keywords=["pymongo mongodb schema import export"],
     long_description=open('README.md').read(),
     requires=['pymongo'],
-    entry_points="""
-    [console_scripts]
-    mongo-schema-export = mongo_import_export_schema.mongo-schema-export:main
-    mongo-schema-import = mongo_import_export_schema.mongo-schema-import:main
-    """
+    entry_points={
+        'console_scripts': [
+            'mongo-schema-export=mongo_import_export_schema.mongo_schema_export:main',
+            'mongo-schema-import=mongo_import_export_schema.mongo_schema_import:main'
+        ]}
 )
