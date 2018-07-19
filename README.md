@@ -1,11 +1,15 @@
 Import/Export Mongo Schema
 ===================
-Import and export mongodb schemas without copying all the data. It will extract the following meta data about a mongo database:
+Import and export mongodb schemas **without** copying all the data. It will extract the following meta data about a mongo database:
 
 * Collections
 * Indexes
 * Cap sizes
 * Schema validators
+
+The primary use case is when you have developed an application that uses mongodb, and want to setup a new instance with
+the appopriate database layout. You can then provide a `config.json` file with your application and have this script
+setup the database for you!
 
 This data will be stored in a `json` file for a database that looks something like this:
 

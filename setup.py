@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='MongoSchemaImportExport',
-    version='0.1',
+    version='0.2',
     packages=['mongo_import_export_schema'],
     license='Creative Commons Attribution-Noncommercial-Share Alike license',
     description='Import and export metadata about mongodb databases and collections',
