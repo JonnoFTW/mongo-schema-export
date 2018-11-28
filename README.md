@@ -9,7 +9,7 @@ Import and export mongodb schemas **without** copying all the data. It will extr
 
 The primary use case is when you have developed an application that uses mongodb, and want to setup a new instance with
 the appopriate database layout. You can then provide a `config.json` file with your application and have this script
-setup the database for you!
+setup the database for you without the need for extra `ensureIndex` calls!
 
 This data will be stored in a `json` file for a database that looks something like this:
 
@@ -182,14 +182,15 @@ Make sure the user you are using to import/export has the appropriate privileges
 To export your data run:
 
 ```bash
-mongo-schema-export --uri mongodb://user:password@database.host1.com:27017/admin --databases test2,testIgnore
+mongo-schema-export.py --uri mongodb://user:password@database.host1.com:27017/admin --databases test2,testIgnore
 ```
 
-To import your schema run as bellow. Use `--delete-col` to delete collections before creating them (you cannot change 
+To import your schema run as bellow. Use `--delete-col` to delete collections before creating them (**WARNING:** this
+ will delete your data, you cannot change 
 an existing collection into a capped one, although, you can set a validator after creation):
 
 ```bash
-mongo-schema-import --uri mongodb://user:password@database.host2.com:27017/admin --databases db_1,db_2 --verbose --delete-col
+mongo-schema-import.py --uri mongodb://user:password@database.host2.com:27017/admin --databases db_1,db_2 --verbose --delete-col
 ```
 You will get an output like this:
 

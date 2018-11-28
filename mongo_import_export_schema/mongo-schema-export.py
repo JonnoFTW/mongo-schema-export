@@ -12,6 +12,7 @@ def log(verbose, *args):
     if verbose:
         print(*args)
 
+
 def mongo_export(client: pymongo.MongoClient, fname: str, databases: str, verbose: bool):
     """
 
@@ -33,7 +34,7 @@ def mongo_export(client: pymongo.MongoClient, fname: str, databases: str, verbos
             indexes = [dict(x) for x in coll.list_indexes()]
             out_indexes = []
             for i in indexes:
-                i['keys'] = list(i['key'].items())
+                i['keys'] = [[k, int(v)] for k, v in i['key'].items()]
                 for f in 'key', 'ns', 'v':
                     if f in i:
                         del i[f]
@@ -66,6 +67,8 @@ def main(argv=sys.argv):
                         help='Databases separated by a comma, eg: db_1,db_2,db_n')
     parser.add_argument('--verbose', action='store_true', help='Show verbose output')
     args = parser.parse_args(argv[1:])
+    if not args.databases:
+        exit("Please specify at least one database to export")
     if args.uri:
         _client = pymongo.MongoClient(args.uri)
     else:
