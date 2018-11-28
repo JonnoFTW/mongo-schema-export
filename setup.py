@@ -2,7 +2,8 @@ from setuptools import setup
 
 setup(
     name='MongoSchemaImportExport',
-    version='0.2.1',
+    version='0.2.2',
+    long_description_content_type="text/markdown",
     packages=['mongo_import_export_schema'],
     license='Creative Commons Attribution-Noncommercial-Share Alike license',
     description='Import and export metadata about mongodb databases and collections',
