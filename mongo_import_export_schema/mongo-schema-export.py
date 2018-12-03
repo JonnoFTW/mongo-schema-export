@@ -13,6 +13,13 @@ def log(verbose, *args):
         print(*args)
 
 
+def toInt(x):
+    try:
+        return int(x)
+    except ValueError:
+        return x
+
+
 def mongo_export(client: pymongo.MongoClient, fname: str, databases: str, verbose: bool):
     """
 
@@ -34,7 +41,7 @@ def mongo_export(client: pymongo.MongoClient, fname: str, databases: str, verbos
             indexes = [dict(x) for x in coll.list_indexes()]
             out_indexes = []
             for i in indexes:
-                i['keys'] = [[k, int(v)] for k, v in i['key'].items()]
+                i['keys'] = [[k, toInt(v)] for k, v in i['key'].items()]
                 for f in 'key', 'ns', 'v':
                     if f in i:
                         del i[f]
