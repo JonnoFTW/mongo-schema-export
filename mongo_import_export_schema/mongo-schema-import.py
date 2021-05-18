@@ -65,7 +65,12 @@ def mongo_import(client: pymongo.MongoClient, fname: str, del_db: bool = False, 
                     log(verbose, "\t\t\tCreating index:", i)
                     keys = [tuple(x) for x in i['keys']]
                     del i['keys']
-                    collection.create_index(keys, **i)
+                    try:
+                        collection.create_index(keys, **i)
+                    except pymongo.errors.OperationFailure as e:
+                        log(verbose, "\t\tDropping index:",i['name'])
+                        collection.drop_index(i['name'])
+                        collection.create_index(keys, **i)
 
 def main(argv=sys.argv):
     parser = argparse.ArgumentParser(description="Import a schema for database")
