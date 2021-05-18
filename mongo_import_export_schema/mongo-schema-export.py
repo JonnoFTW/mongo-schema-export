@@ -41,7 +41,6 @@ def mongo_export(client: pymongo.MongoClient, fname: str, databases: str, verbos
             # ignore view collections
             if 'viewOn' in opts:
                 continue
-            listIndexes = coll.list_indexes()
             indexes = [dict(x) for x in coll.list_indexes()]
             out_indexes = []
             for i in indexes:
