@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 import sys
 import pymongo
 from bson import json_util
@@ -42,7 +42,7 @@ def mongo_import(client: pymongo.MongoClient, fname: str, del_db: bool = False, 
                 else:
                     # if the collection already exists, skip it
                     if cname in db.list_collection_names():
-                        print("\t\tAlready exists")
+                        log(verbose, "\t\tAlready exists")
                         exists = True
                 if not exists:
                     log(verbose, "\t\tCreating collection:")
@@ -68,7 +68,7 @@ def mongo_import(client: pymongo.MongoClient, fname: str, del_db: bool = False, 
                     try:
                         collection.create_index(keys, **i)
                     except pymongo.errors.OperationFailure as e:
-                        log(verbose, "\t\tDropping index:",i['name'])
+                        log(verbose, "\t\tDropping index:", i['name'])
                         collection.drop_index(i['name'])
                         collection.create_index(keys, **i)
 
@@ -82,13 +82,13 @@ def main(argv=sys.argv):
     parser.add_argument('--password', metavar='pwd', type=str, help='Username', default='')
     parser.add_argument('--authSource', metavar='a', type=str, help='DB to auth against', default='admin')
     parser.add_argument('--file', metavar='f', type=str, help='Path to exported .json file', default='config.json')
-    parser.add_argument('--delete-db', action='store_true', help='Delete existing database if it exist')
+    parser.add_argument('--delete-db', action='store_true', help='Delete collections if they exist')
     parser.add_argument('--delete-col', action='store_true',
                         help='Delete existing collections if they exist')
     parser.add_argument('--verbose', action='store_true', help='Display verbose output')
     parser.add_argument('--databases', metavar='db', type=str,
                         help='Select databases from the config json to insert, default is all of them', default='*')
-    parser.add_argument('--force', metavar='F', type=str, help='Force the creation of the index')
+    parser.add_argument('--force', metavar='F', type=str, help='Force index creation')
 
     args = parser.parse_args(argv[1:])
     if args.uri:
