@@ -86,10 +86,11 @@ def main(argv=sys.argv):
                 client_args[i] = getattr(args, i)
         _client = pymongo.MongoClient(**client_args)
 
-    if not args.databases:
-        databases = ",".join(_client.database_names())
-    else:
+    if args.databases:
         databases = args.databases
+    else:
+        databases = ",".join(_client.database_names())
+
     s = mongo_export(_client, args.file, databases, args.verbose)
     if args.verbose:
         print(s)

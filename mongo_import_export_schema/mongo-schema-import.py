@@ -44,16 +44,16 @@ def mongo_import(client: pymongo.MongoClient, fname: str, del_db: bool = False, 
                     if cname in db.list_collection_names():
                         log(verbose, "\t\tAlready exists")
                         exists = True
-                if not exists:
-                    log(verbose, "\t\tCreating collection:")
-                    log(verbose, "\t\t\tOptions", c['options'])
-                    collection = db.create_collection(cname, **c['options'])
-                else:
+                if exists:
                     collection = db[cname]
                     indexes = [dict(x) for x in collection.list_indexes()]
                     name_indexes = []
                     for i in indexes:
                         name_indexes.append(i['name'])
+                else:
+                    log(verbose, "\t\tCreating collection:")
+                    log(verbose, "\t\t\tOptions", c['options'])
+                    collection = db.create_collection(cname, **c['options'])
 
                 log(verbose, "\t\tCreate indexes")
                 for i in c['indexes']:
