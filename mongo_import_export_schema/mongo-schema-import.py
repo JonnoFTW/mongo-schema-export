@@ -58,7 +58,7 @@ def mongo_import(client: pymongo.MongoClient, fname: str, del_db: bool = False, 
                 log(verbose, "\t\tCreate indexes")
                 for i in c['indexes']:
                     if i['name'] in name_indexes:
-                        log(verbose, "\t\t\tAlready existant index name:", i)
+                        log(verbose, "\t\t\tIndex already exists", i)
                         if not force:
                             continue
 
