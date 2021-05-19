@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import sys
 from collections import defaultdict
 from datetime import datetime
@@ -38,6 +38,9 @@ def mongo_export(client: pymongo.MongoClient, fname: str, databases: str, verbos
             autoIndexId = 'autoIndexId'
             if autoIndexId in opts:
                 del opts[autoIndexId]  # this is deprecated
+            # ignore view collections
+            if 'viewOn' in opts:
+                continue
             indexes = [dict(x) for x in coll.list_indexes()]
             out_indexes = []
             for i in indexes:
@@ -72,10 +75,9 @@ def main(argv=sys.argv):
     parser.add_argument('--file', metavar='f', type=str, help='Path to exported .json file', default='config.json')
     parser.add_argument('--databases', metavar='db', type=str,
                         help='Databases separated by a comma, eg: db_1,db_2,db_n')
+    parser.add_argument('--all', action='store_true', help='Export all databases')
     parser.add_argument('--verbose', action='store_true', help='Show verbose output')
     args = parser.parse_args(argv[1:])
-    if not args.databases:
-        exit("Please specify at least one database to export")
     if args.uri:
         _client = pymongo.MongoClient(args.uri)
     else:
@@ -85,7 +87,14 @@ def main(argv=sys.argv):
                 client_args[i] = getattr(args, i)
         _client = pymongo.MongoClient(**client_args)
 
-    s = mongo_export(_client, args.file, args.databases, args.verbose)
+    if args.databases:
+        databases = args.databases
+    elif args.all:
+        databases = ",".join(_client.database_names())
+    else:
+        exit("Please specify at least one database to export or add --all arguments")
+
+    s = mongo_export(_client, args.file, databases, args.verbose)
     if args.verbose:
         print(s)
 
