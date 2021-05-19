@@ -82,9 +82,9 @@ def main(argv=sys.argv):
     parser.add_argument('--password', metavar='pwd', type=str, help='Username', default='')
     parser.add_argument('--authSource', metavar='a', type=str, help='DB to auth against', default='admin')
     parser.add_argument('--file', metavar='f', type=str, help='Path to exported .json file', default='config.json')
-    parser.add_argument('--delete-db', action='store_true', help='Delete collections if they exist')
+    parser.add_argument('--delete-db', action='store_true', help='Delete database if it exists')
     parser.add_argument('--delete-col', action='store_true',
-                        help='Delete existing collections if they exist')
+                        help='Delete collections if they exist')
     parser.add_argument('--verbose', action='store_true', help='Display verbose output')
     parser.add_argument('--databases', metavar='db', type=str,
                         help='Select databases from the config json to insert, default is all of them', default='*')
