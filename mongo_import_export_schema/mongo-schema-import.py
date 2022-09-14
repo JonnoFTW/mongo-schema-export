@@ -37,7 +37,7 @@ def mongo_import(client: pymongo.MongoClient, fname: str, del_db: bool = False, 
                     db.drop_collection(cname)
                 else:
                     # if the collection already exists, skip it
-                    if cname in db.collection_names():
+                    if cname in db.list_collection_names():
                         print("\t{} already exists, skipping".format(cname))
                         continue
                 log(verbose, "\tCreating collection:", cname)
